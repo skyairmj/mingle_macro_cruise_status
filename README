@@ -1,0 +1,15 @@
+mingle macro: cruise status
+---------------------------------
+
+This macro will report on cruise status. 
+
+Usage:
+{{ 
+  cruise_status
+	cruise_url: 'http://localhost:8153/cruise/'    #the address of cruise
+	pipeline_name: 'name of the pipeline'
+	authenticate: 'true/false'    #whether authentication is required or not
+	username: 'admin'    #if authentication required, the username of the a principal
+	password: 'admin'    #if authentication required, the password of the a principal
+	interval: 3          #the interval this macro request Cruise, integer in second
+}}
