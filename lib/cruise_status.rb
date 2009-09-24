@@ -13,7 +13,7 @@ class CruiseStatus
     <<-HTML
       <script src="/javascripts/jsonp.js" type="text/javascript"></script>
       <script type="text/javascript">
-      function generateLightBox(pipeline, stage){
+      function getCruiseStatusReportContent(pipeline, stage){
         return '<ul>'+
           '<li>Stage: '+ stage.stageName+
           '<li>Time: '+ stage.builds[0].build_completing_date +
@@ -35,8 +35,41 @@ class CruiseStatus
         '</div>';
       }
       
-      function isBuildFailed(stage){
+      function createCruiseStatusReport(){
+        InputingContexts.push(new LightboxInputingContext(Prototype.emptyFunction))
+        InputingContexts.top().update(getCruiseStatusReport())
+      }
+      
+      function updateCruiseStatusReport(pipeline, stage){
+        content = getCruiseStatusReportContent(pipeline, failed_stage);
+        InputingContexts.top().update('cruise_status_report', content);
+      }
+      
+      function removeCruiseStatusReport(){
+        InputingContexts.pop();
+      }
+      
+      function isCruiseStatusReportPoped(){
+        return !Object.isUndefined(InputingContexts.top());
+      }
+      
+      function isStageFailed(stage){
         return stage.current_status == 'failed';
+      }
+      
+      function isPipelineFailed(stage){
+        return !Object.isUndefined(failed_stage);
+      }
+      
+      function findLatestFailedStage(pipeline){
+        failed_stage = undefined
+        $A(pipeline.stages).each(function(stage){
+          if(isStageFailed(stage)){
+            failed_stage = stage
+            throw $break
+          }
+        })
+        return failed_stage;
       }
       
       new PeriodicalExecuter(function(){
@@ -47,24 +80,16 @@ class CruiseStatus
           },
           onSuccess: function(response){
             pipeline = response.responseJSON.pipelines[0]
-            failed_stage = undefined
-            $A(pipeline.stages).each(function(stage){
-              if(isBuildFailed(stage)){
-                failed_stage = stage
-                throw $break
+            failed_stage = findLatestFailedStage(pipeline);
+            if(isPipelineFailed(failed_stage)){  
+              if(!isCruiseStatusReportPoped()){
+                createCruiseStatusReport();
               }
-            })
-            if(!Object.isUndefined(failed_stage)){  
-              if(Object.isUndefined(InputingContexts.top())){
-                InputingContexts.push(new LightboxInputingContext(Prototype.emptyFunction))
-                InputingContexts.top().update(getCruiseStatusReport())
-              }
-              content = generateLightBox(pipeline, failed_stage);
-              InputingContexts.top().update('cruise_status_report', content);
+              updateCruiseStatusReport(pipeline, failed_stage);
             }
             else{
-              if(!Object.isUndefined(InputingContexts.top())){
-                InputingContexts.pop();
+              if(isCruiseStatusReportPoped()){
+                removeCruiseStatusReport();
               }
             }
           },
