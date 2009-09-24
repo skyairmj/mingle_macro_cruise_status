@@ -1,3 +1,5 @@
+require 'activesupport'
+
 class CruiseStatus
   @@DEFULT_INTERVAL = 180
 
@@ -36,7 +38,7 @@ class CruiseStatus
       }
       
         new PeriodicalExecuter(function(){
-          new Ajax.JSONRequest('#{url}', {
+          new Ajax.JSONRequest(#{url}, {
             callbackParamName: 'callback',
             parameters: {
               format: 'json'
@@ -70,15 +72,16 @@ class CruiseStatus
   end
   
   def url
-    final_url = cruise_url
+    final_url = (cruise_url<<'/' unless cruise_url.match(/\/$/)) || cruise_url
+    final_url = final_url + "pipelineStatus.json?pipelineName=" + pipeline_name
     if cruise_authenticated?
-      final_url.insert final_url.index("://")+"://".length, username+':'+password+'@'
+      final_url = final_url.split("://").collect(&:to_json).join('+"://'+username+':'+password+'@"+')
     end
-    final_url + 'pipelineStatus.json?pipelineName=' + pipeline_name
+    final_url
   end
   
   def cruise_authenticated?
-    'true'.eql?(@parameters['authenticate'])
+    'true'.eql?(@parameters['authenticate']||'true')
   end
   
   def interval
