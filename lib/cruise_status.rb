@@ -14,12 +14,7 @@ class CruiseStatus
       <script src="/javascripts/jsonp.js" type="text/javascript"></script>
       <script type="text/javascript">
       function generateLightBox(pipeline, stage){
-        return '<div class="action-bar-inner-wrapper" style="font-size:160%">'+
-          '<h1 style="background-image:url(/images/stop-the-line.png)">Stop the line!</h1>'+
-          '<img src="/images/stop-the-line.png" alt="image"/>'+
-          '<h2>The build is Failing...</h2>'+
-          '<p>'+
-          '<ul>'+
+        return '<ul>'+
           '<li>Stage: '+ stage.stageName+
           '<li>Time: '+ stage.builds[0].build_completing_date +
           '<li>Last Checkin '+
@@ -27,8 +22,16 @@ class CruiseStatus
           '<li style="list-style: circle">'+ stage.materialRevisions[0].modifications[0].user +
           '<li style="list-style: circle">'+ stage.materialRevisions[0].modifications[0].comment +
           '</ul>'+
-          '</ul>'+
-          '</p>'+
+          '</ul>';
+      }
+      
+      function getCruiseStatusReport(){
+        return '<div class="action-bar-inner-wrapper" style="font-size:160%">'+
+          '<div><div style="float:left"><h1>Stop the line!</h1></div><div style="float:right"><img src="/images/stop-the-line.png"/></div>'+
+          '<div style="clear:both"></div>'+
+          '</div>'+
+          '<h2>The build is Failing...</h2>'+
+          '<p id="cruise_status_report" style="margin:0px"></p>'+
         '</div>';
       }
       
@@ -52,11 +55,12 @@ class CruiseStatus
               }
             })
             if(!Object.isUndefined(failed_stage)){  
-              content = generateLightBox(pipeline, failed_stage);
               if(Object.isUndefined(InputingContexts.top())){
                 InputingContexts.push(new LightboxInputingContext(Prototype.emptyFunction))
+                InputingContexts.top().update(getCruiseStatusReport())
               }
-              InputingContexts.top().update(content)
+              content = generateLightBox(pipeline, failed_stage);
+              InputingContexts.top().update('cruise_status_report', content);
             }
             else{
               if(!Object.isUndefined(InputingContexts.top())){
