@@ -15,7 +15,8 @@ class CruiseStatus
       <script type="text/javascript">
       function generateLightBox(pipeline, stage){
         return '<div class="action-bar-inner-wrapper" style="font-size:160%">'+
-          '<h1>Stop the line!</h1>'+
+          '<h1 style="background-image:url(/images/stop-the-line.png)">Stop the line!</h1>'+
+          '<img src="/images/stop-the-line.png" alt="image"/>'+
           '<h2>The build is Failing...</h2>'+
           '<p>'+
           '<ul>'+
