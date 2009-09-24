@@ -6,10 +6,10 @@ The macro fetches the build status of the latest pipeline instance from Cruise a
 Usage:
 {{
   cruise_status
-	cruise_url: 'http://localhost:8153/cruise/'    #the address of cruise
-	pipeline_name: 'name of the pipeline'
-	authenticate: 'true/false'    #optional, 'true' by default, whether authentication is required or not
-	username: 'admin'    #if authentication required, the username of the a principal
-	password: 'admin'    #if authentication required, the password of the a principal
-	interval: 3          #the interval this macro request Cruise, integer in second
+    cruise_url: 'http://localhost:8153/cruise/'    #the address of cruise
+    pipeline_name: 'name of the pipeline'
+    authenticate: 'true/false'    #optional, 'true' by default, whether authentication is required or not
+    username: 'admin'    #if authentication required, the username of the a principal
+    password: 'admin'    #if authentication required, the password of the a principal
+    interval: 3          #the interval this macro request Cruise, integer in second
 }}
