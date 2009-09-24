@@ -13,8 +13,6 @@ class CruiseStatus
     <<-HTML
       <script src="/javascripts/jsonp.js" type="text/javascript"></script>
       <script type="text/javascript">
-      //var Studios = {}
-      //Studios.CruiseStatusRetriver = Class.create(Ajax.JSONRequest,{});
       function generateLightBox(pipeline, stage){
         return '<div class="action-bar-inner-wrapper">'+
           '<h1>Stop the line!</h1>'+
@@ -37,21 +35,21 @@ class CruiseStatus
         return stage.current_status == 'failed';
       }
       
-        new PeriodicalExecuter(function(){
-          new Ajax.JSONRequest(#{url}, {
-            callbackParamName: 'callback',
-            parameters: {
-              format: 'json'
-            },
-            onSuccess: function(response){
-              pipeline = response.responseJSON.pipelines[0]
-              failed_stage = undefined
-              $A(pipeline.stages).each(function(stage){
-                if(isBuildFailed(stage)){
-                  failed_stage = stage
-                  throw $break
-                }
-              })
+      new PeriodicalExecuter(function(){
+        new Ajax.JSONRequest(#{url}, {
+          callbackParamName: 'callback',
+          parameters: {
+            format: 'json'
+          },
+          onSuccess: function(response){
+            pipeline = response.responseJSON.pipelines[0]
+            failed_stage = undefined
+            $A(pipeline.stages).each(function(stage){
+              if(isBuildFailed(stage)){
+                failed_stage = stage
+                throw $break
+              }
+            })
             if(!Object.isUndefined(failed_stage)){  
               content = generateLightBox(pipeline, failed_stage);
               if(Object.isUndefined(InputingContexts.top())){
@@ -64,9 +62,9 @@ class CruiseStatus
                 InputingContexts.pop();
               }
             }
-            },
-          });
-        }, #{interval});
+          },
+        });
+      }, #{interval});
       </script>
     HTML
   end
